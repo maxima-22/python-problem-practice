@@ -1,0 +1,30 @@
+# YAML-file for heroes.py
+
+hero_presets:
+  warrior:
+    hp: 120
+    mana: 50
+    main_stat: STR
+    strength: 10
+    dexterity: 5
+    intelligence: 5
+    weapon: Sword
+    armor_type: Plate
+  mage:
+    hp: 80
+    mana: 150
+    main_stat: DEX
+    strength: 5
+    dexterity: 5
+    intelligence: 10
+    weapon: Sceptre
+    armor_type: Cloth
+  rogue:
+    hp: 100
+    mana: 95
+    main_stat: DEX
+    strength: 5
+    dexterity: 10
+    intelligence: 5
+    weapon: Bow
+    armor_type: Leather
