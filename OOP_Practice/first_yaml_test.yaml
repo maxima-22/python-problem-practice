@@ -1,0 +1,12 @@
+# First test use of YAML
+
+database:
+  host: 12345
+  port: 5555
+  username: "Maxima"
+
+server:
+  host: 2211
+  port: 4444
+  debug: false
+  allowed_hosts: ["5678", "9090"]
