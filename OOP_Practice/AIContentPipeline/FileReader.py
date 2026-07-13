@@ -54,7 +54,7 @@ class FileReader:
     # =============== Static methods ====================
 
     @staticmethod
-    def is_valid_ext(path: Path) -> bool:
+    def is_valid_ext(path: Union[Path, str]) -> bool:
         """
         Check if file has valid format.
         Args:
@@ -62,12 +62,15 @@ class FileReader:
         Returns:
             True if format is valid, else False
         """
-
+        if isinstance(path, str):
+            path = Path(path)
         return path.suffix.lower() in FileReader.SUPPORTED_FORMATS
 
     @staticmethod
-    def file_exists(path: Path) -> bool:
+    def file_exists(path: Union[Path, str]) -> bool:
         """Check file existance"""
+        if isinstance(path, str):
+            path = Path(path)
         return path.exists() and path.is_file()
 
     # =============== Instance methods ====================
@@ -137,57 +140,71 @@ class TextHelper:
 # class ContentLoader:
 
 if __name__ == "__main__":
-    print("=== FileReader.is_valid_ext() — static validation ===\n")
+    print("\n=== FileReader ===\n")
 
+    # Создаём тестовые файлы
+    test_txt = "test_document.txt"
+    test_content = """# Заголовок документа
+
+Это первая строка.
+Это вторая строка.
+Это третья строка.
+
+Это последняя строка.
 """
-    # Test validation WITHOUT creaing of an object
-    test_files = [
-        "document.txt",
-        "README.md",
-        "config.yaml",
-        "data.json",
-        "image.png",
-        "script.py",
-    ]
 
-    print("=== Format check ===\n")
+    with open(test_txt, "w", encoding="utf-8") as f:
+        f.write(test_content)
+
+    print("=== Чтение текстового файла ===")
+    txt_reader = FileReader.from_txt(test_txt)
+    txt_reader.display_stats()
+
+    # Показываем строки
+    print("Первые 3 строки:")
+    for i, line in enumerate(txt_reader.get_lines()[:3], 1):
+        print(f"  {i}. {line}")
+    print()
+
+    # Чтение YAML
+    config_path = Path(__file__).parent / "ai_pipeline.yaml"
+
+    if config_path.exists():
+        print("=== Чтение YAML конфига ===")
+        yaml_reader = FileReader.from_yaml(str(config_path))
+        yaml_reader.display_stats()
+
+        # Получаем данные
+        data = yaml_reader.get_data()
+        print("Секции конфига:")
+        for key in data.keys():
+            print(f"  - {key}")
+        print()
+
+    # Демонстрация валидации
+    print("=== Валидация файлов ===")
+    test_files = ["document.txt", "config.yaml", "data.json", "image.png"]
+
     for filename in test_files:
-        # Call static method through class
         is_valid = FileReader.is_valid_ext(filename)
         status = "✅" if is_valid else "❌"
         print(
-            f"{status} {filename:20} — {'is supported' if is_valid else 'is not supported'}"
+            f"{status} {filename:20} — {'поддерживается' if is_valid else 'не поддерживается'}"
         )
+    print()
 
-    print("\n=== Custom format list ===\n")
-    custom_formats = [".json", ".xml"]
-    for filename in test_files:
-        is_valid = FileReader.is_valid_ext(filename, custom_formats)
-        status = "✅" if is_valid else "❌"
-        print(
-            f"{status} {filename:20} — {'JSON/XML' if is_valid else 'another format'}"
-        )
-
-    print("\n=== Using in fabric ===\n")
-
-    # Create test file
-    test_txt = "test.txt"
-    with open(test_txt, "w", encoding="utf-8") as f:
-        f.write("Тестовый контент")
-
-    # Successfull reading
+    # Демонстрация обработки ошибок
+    print("=== Обработка ошибок ===")
     try:
-        reader = FileReader.from_txt(test_txt)
-        print(f"✅ Файл {test_txt} successfully loaded")
-    except ValueError as e:
-        print(f"❌ Error: {e}")
+        reader = FileReader.from_txt("nonexistent.txt")
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
 
-    # Trying to read unsuppoerted format
     try:
-        reader = FileReader.from_txt("fake.json")
+        reader = FileReader.from_txt("image.png")
     except ValueError as e:
-        print(f"❌ Expected error: {e}")
+        print(f"❌ {e}")
+    print()
 
-    # Delete test file
+    # Удаляем тестовый файл
     Path(test_txt).unlink()
-"""
