@@ -1,0 +1,5 @@
+api_key: "sk-test-yaml-key-1234567890"
+provider: "mistral"
+model: "mistral-large"
+temperature: 0.3
+max_tokens: 2000
