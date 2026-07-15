@@ -16,6 +16,18 @@ class FileReader:
         self.content = content
         self.source_path = source_path
         self.is_yaml = isinstance(content, dict)
+        self.filename = Path(source_path).name
+        self.extension = Path(source_path).suffix
+        self._processed = False
+
+    # =========== Dunder methods ============
+
+    def __repr__(self) -> str:
+        status = "✓" if self._processed else "○"
+        return f"FileReader('{self.filename}' {status})"
+
+    def __str__(self) -> str:
+        return self.filename
 
     # =============== Fabric methods ====================
 
@@ -104,6 +116,11 @@ class FileReader:
             print(f"Строк: {len(self.get_lines())}")
             print(f"Слов: {self.get_word_count()}")
         print(f"{'=' * 50}\n")
+
+    def process(self) -> None:
+        """Имитация обработки файла."""
+        self._processed = True
+        print(f"    ⚙️ Обработан: {self.filename}")
 
 
 class TextHelper:
